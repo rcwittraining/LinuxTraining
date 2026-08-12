@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Unofficial web simulator of the Red Hat Enterprise Linux 10 Anaconda installer. Educational demo — nothing is written to your computer." />
+  <meta name="theme-color" content="#151515" />
+  <title>RHEL 10 Installation Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&family=Red+Hat+Mono:wght@400;500;600&family=Red+Hat+Text:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23EE0000'/%3E%3Cpath fill='%23fff' d='M14 42c8-14 14-22 18-22 3 0 4 3 6 8 1 4 3 8 6 8 4 0 6-6 6-6l4 2s-3 10-10 10c-5 0-7-5-8-9-1-4-2-7-4-7-5 0-10 10-14 16z'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="sim-banner">
+    <span>RHEL 10 Installation Simulator · unofficial educational demo · no disks are modified</span>
+    <span class="banner-actions">
+      <button type="button" id="btn-skip" title="Jump to a finished install">Skip to installed system</button>
+      <button type="button" id="btn-banner-help">Help</button>
+    </span>
+  </div>
+
+  <div id="app">
+    <!-- POWER -->
+    <section class="screen active" id="screen-power">
+      <div class="power-scene">
+        <div class="standby-led"></div>
+        <div class="rh-wordmark">RED HAT<sup>®</sup></div>
+        <div class="rh-product">Enterprise Linux <em>10</em></div>
+        <button type="button" class="power-orb" id="btn-power" aria-label="Power on">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 4v8"/><path fill="none" stroke="currentColor" stroke-width="1.8" d="M7.2 7.1a7 7 0 109.6 0"/></svg>
+        </button>
+        <p class="hint">Press the power button to boot the installation media</p>
+      </div>
+    </section>
+
+    <!-- FIRMWARE -->
+    <section class="screen" id="screen-firmware">
+      <div class="firmware">
+        <div class="fw-row">
+          <div>
+            <div class="fw-vendor">American Megatrends</div>
+            <div class="fw-sub">UEFI BIOS Version 2.22.1290 · Copyright (C) 2025</div>
+          </div>
+          <div class="fw-right">Red Hat Compatible</div>
+        </div>
+        <pre class="fw-log" id="fw-log"></pre>
+        <div class="fw-bar"><i id="fw-bar"></i></div>
+        <div class="fw-keys">Press <kbd>Del</kbd> to enter Setup · <kbd>F12</kbd> Boot Menu · <kbd>Esc</kbd> skip POST</div>
+      </div>
+    </section>
+
+    <!-- GRUB -->
+    <section class="screen" id="screen-grub">
+      <div class="grub">
+        <div class="grub-brand">
+          <div class="hat-mark" aria-hidden="true"></div>
+          <div>
+            <div class="grub-product">Red Hat Enterprise Linux 10.0</div>
+            <div class="grub-iso">Install DVD · x86_64 · GRUB 2.12</div>
+          </div>
+        </div>
+        <div class="grub-box" id="grub-box" tabindex="0" role="listbox" aria-label="Boot menu"></div>
+        <div class="grub-help" id="grub-help">
+          Use the ↑ and ↓ keys to change the selection.<br />
+          Press Enter to boot the selected option, <b>e</b> to edit, or <b>c</b> for a command line.
+        </div>
+      </div>
+    </section>
+
+    <!-- MEDIA CHECK -->
+    <section class="screen" id="screen-media">
+      <div class="media-card">
+        <h2>Checking installation media</h2>
+        <p class="muted">This verifies the ISO checksum before Anaconda starts. On real hardware this can take several minutes.</p>
+        <div class="media-bar"><i id="media-bar"></i></div>
+        <div class="media-status" id="media-status">Testing checksums…</div>
+      </div>
+    </section>
+
+    <!-- ANACONDA -->
+    <section class="screen" id="screen-anaconda">
+      <div class="ana">
+        <header class="ana-top">
+          <div class="ana-brand">
+            <span class="hat-mark sm"></span>
+            <span>RED HAT ENTERPRISE LINUX 10.0 INSTALLATION</span>
+          </div>
+          <div class="ana-top-actions">
+            <button type="button" class="icon-btn" id="ana-help" title="Help">?</button>
+            <button type="button" class="icon-btn" id="ana-x" title="Quit">×</button>
+          </div>
+        </header>
+
+        <!-- Language (standalone spoke) -->
+        <div class="ana-view" id="view-language">
+          <div class="lang-wrap">
+            <h1>WELCOME TO RED HAT ENTERPRISE LINUX 10.0</h1>
+            <p class="lede">What language would you like to use during the installation process?</p>
+            <div class="lang-grid">
+              <ul class="lang-left" id="lang-families"></ul>
+              <ul class="lang-right" id="lang-locales"></ul>
+            </div>
+            <label class="precheck"><input type="checkbox" id="precheck" checked /> I want to set the default language and keyboard for the installed system to match this choice.</label>
+            <div class="lang-actions">
+              <button type="button" class="btn suggested" id="btn-continue">Continue</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Installation Summary hub -->
+        <div class="ana-view hidden" id="view-hub">
+          <div class="hub">
+            <div class="hub-col">
+              <h3>LOCALIZATION</h3>
+              <button type="button" class="spoke" data-spoke="keyboard">
+                <span class="spoke-ico key"></span>
+                <span>
+                  <b>Keyboard</b>
+                  <small id="st-keyboard">English (US)</small>
+                </span>
+              </button>
+              <button type="button" class="spoke" data-spoke="langsup">
+                <span class="spoke-ico lang"></span>
+                <span>
+                  <b>Language Support</b>
+                  <small id="st-langsup">English (United States)</small>
+                </span>
+              </button>
+              <button type="button" class="spoke" data-spoke="datetime">
+                <span class="spoke-ico clock"></span>
+                <span>
+                  <b>Time &amp; Date</b>
+                  <small id="st-datetime">Asia/Kolkata</small>
+                </span>
+              </button>
+            </div>
+            <div class="hub-col">
+              <h3>SOFTWARE</h3>
+              <button type="button" class="spoke" data-spoke="source">
+                <span class="spoke-ico disc"></span>
+                <span>
+                  <b>Installation Source</b>
+                  <small id="st-source">Local media</small>
+                </span>
+              </button>
+              <button type="button" class="spoke" data-spoke="software">
+                <span class="spoke-ico box"></span>
+                <span>
+                  <b>Software Selection</b>
+                  <small id="st-software">Server with GUI</small>
+                </span>
+              </button>
+            </div>
+            <div class="hub-col">
+              <h3>SYSTEM</h3>
+              <button type="button" class="spoke warn" data-spoke="dest" id="spoke-dest">
+                <span class="spoke-ico disk"></span>
+                <span>
+                  <b>Installation Destination</b>
+                  <small id="st-dest">Please select a disk and partitioning scheme</small>
+                </span>
+                <span class="warn-tri" title="Required"></span>
+              </button>
+              <button type="button" class="spoke" data-spoke="kdump">
+                <span class="spoke-ico bug"></span>
+                <span>
+                  <b>KDUMP</b>
+                  <small id="st-kdump">Kdump is enabled</small>
+                </span>
+              </button>
+              <button type="button" class="spoke" data-spoke="network">
+                <span class="spoke-ico net"></span>
+                <span>
+                  <b>Network &amp; Host Name</b>
+                  <small id="st-network">Connected: enp1s0</small>
+                </span>
+              </button>
+              <button type="button" class="spoke" data-spoke="connect">
+                <span class="spoke-ico rh"></span>
+                <span>
+                  <b>Connect to Red Hat</b>
+                  <small id="st-connect">Not registered</small>
+                </span>
+              </button>
+            </div>
+            <div class="hub-col full">
+              <h3>USER SETTINGS</h3>
+              <div class="hub-row">
+                <button type="button" class="spoke warn" data-spoke="root" id="spoke-root">
+                  <span class="spoke-ico root"></span>
+                  <span>
+                    <b>Root Password</b>
+                    <small id="st-root">Root account is disabled</small>
+                  </span>
+                  <span class="warn-tri"></span>
+                </button>
+                <button type="button" class="spoke warn" data-spoke="user" id="spoke-user">
+                  <span class="spoke-ico user"></span>
+                  <span>
+                    <b>User Creation</b>
+                    <small id="st-user">No user will be created</small>
+                  </span>
+                  <span class="warn-tri"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <footer class="ana-foot">
+            <button type="button" class="btn" id="btn-quit">Quit</button>
+            <span class="foot-hint" id="begin-hint">Visit Installation Destination and create a user or enable root to continue.</span>
+            <button type="button" class="btn suggested" id="btn-begin" disabled>Begin Installation</button>
+          </footer>
+        </div>
+
+        <!-- Generic spoke chrome; body injected -->
+        <div class="ana-view hidden" id="view-spoke">
+          <div class="spoke-bar">
+            <button type="button" class="btn done" id="spoke-done">Done</button>
+            <h2 id="spoke-title">Spoke</h2>
+          </div>
+          <div class="spoke-body" id="spoke-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="screen" id="screen-progress">
+      <div class="ana">
+        <header class="ana-top">
+          <div class="ana-brand">
+            <span class="hat-mark sm"></span>
+            <span>RED HAT ENTERPRISE LINUX 10.0 INSTALLATION</span>
+          </div>
+        </header>
+        <div class="prog-wrap">
+          <h1>INSTALLATION PROGRESS</h1>
+          <p class="lede" id="prog-msg">Setting up storage…</p>
+          <div class="prog-bar"><i id="prog-fill"></i></div>
+          <div class="prog-meta">
+            <span id="prog-pct">0%</span>
+            <button type="button" class="link" id="toggle-log">Show log</button>
+          </div>
+          <pre class="install-log hidden" id="install-log"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPLETE -->
+    <section class="screen" id="screen-done">
+      <div class="ana">
+        <header class="ana-top">
+          <div class="ana-brand">
+            <span class="hat-mark sm"></span>
+            <span>RED HAT ENTERPRISE LINUX 10.0 INSTALLATION</span>
+          </div>
+        </header>
+        <div class="done-wrap">
+          <div class="done-check">✓</div>
+          <h1>Complete!</h1>
+          <p>Red Hat Enterprise Linux 10.0 is now successfully installed and ready for you to use.<br />Go ahead and reboot to start using it.</p>
+          <button type="button" class="btn suggested" id="btn-reboot">Reboot System</button>
+          <p class="tiny">Remember to remove the installation media so the machine boots from disk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLYMOUTH -->
+    <section class="screen" id="screen-plymouth">
+      <div class="plymouth">
+        <div class="hat-mark lg"></div>
+        <div class="ply-name">Red Hat Enterprise Linux</div>
+        <div class="ply-dots" id="ply-dots"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </section>
+
+    <!-- TEXT CONSOLE -->
+    <section class="screen" id="screen-console">
+      <div class="tty" id="tty"></div>
+    </section>
+
+    <!-- LOGIN (GNOME GDM) -->
+    <section class="screen" id="screen-login">
+      <div class="gdm">
+        <div class="gdm-clock" id="gdm-clock">00:00</div>
+        <div class="gdm-card">
+          <div class="gdm-avatar" id="gdm-avatar">U</div>
+          <div class="gdm-name" id="gdm-name">User</div>
+          <form id="login-form" autocomplete="off">
+            <input id="login-pass" type="password" placeholder="Password" />
+            <button type="submit" class="btn suggested wide">Sign In</button>
+          </form>
+          <p class="login-hint" id="login-hint"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESKTOP -->
+    <section class="screen" id="screen-desktop">
+      <div class="gnome" id="gnome">
+        <header class="panel">
+          <button type="button" class="act" id="btn-activities">Activities</button>
+          <div class="panel-app" id="panel-app">RHEL 10</div>
+          <button type="button" class="panel-clock" id="panel-clock">00:00</button>
+          <div class="tray">
+            <span title="Network">⌁</span>
+            <span title="Volume">♪</span>
+            <button type="button" id="btn-system" title="System">⏻</button>
+          </div>
+        </header>
+        <div class="desk-icons" id="desk-icons"></div>
+        <nav class="dash" id="dash" aria-label="Dash"></nav>
+        <div class="wins" id="wins"></div>
+        <div class="sysmenu hidden" id="sysmenu">
+          <div class="sys-head">
+            <div class="gdm-avatar sm" id="sys-av">U</div>
+            <div>
+              <div id="sys-name">User</div>
+              <div class="muted" id="sys-host">localhost</div>
+            </div>
+          </div>
+          <button type="button" data-sys="settings">Settings</button>
+          <button type="button" data-sys="about">About This System</button>
+          <hr />
+          <button type="button" data-sys="lock">Lock</button>
+          <button type="button" data-sys="reboot">Restart simulator</button>
+          <button type="button" data-sys="off">Power Off</button>
+        </div>
+        <div class="overview hidden" id="overview">
+          <input id="ov-search" type="search" placeholder="Type to search" autocomplete="off" />
+          <div class="ov-grid" id="ov-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOCK -->
+    <section class="screen" id="screen-lock">
+      <div class="gdm dim">
+        <div class="lock-time" id="lock-clock">00:00</div>
+        <div class="lock-date" id="lock-date"></div>
+        <p class="hint">Click or press a key to unlock</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <div class="overlay hidden" id="modal-help">
+    <div class="modal">
+      <h3>About this simulator</h3>
+      <p>This page recreates the <b>Anaconda</b> installer used by Red Hat Enterprise Linux 10. It is an unofficial teaching tool. Nothing is installed on your computer.</p>
+      <ul>
+        <li><b>Power &amp; firmware</b> — UEFI POST, then the DVD bootloader.</li>
+        <li><b>GRUB</b> — Install, test media, or rescue. Use arrow keys and Enter.</li>
+        <li><b>Hub &amp; spokes</b> — Configure tiles on the Installation Summary, then Begin Installation.</li>
+        <li><b>First boot</b> — GNOME if you picked a GUI environment, otherwise a text console.</li>
+      </ul>
+      <p class="muted">Host the folder on GitHub Pages and embed it in Blogger with an iframe. Red Hat® and RHEL® are trademarks of Red Hat, Inc. This project is not affiliated with Red Hat.</p>
+      <div class="row-end">
+        <button type="button" class="btn" id="help-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="modal-confirm">
+    <div class="modal">
+      <h3 id="confirm-title">Quit?</h3>
+      <p id="confirm-body"></p>
+      <div class="row-end">
+        <button type="button" class="btn" id="confirm-no">Cancel</button>
+        <button type="button" class="btn danger" id="confirm-yes">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/simulator.js"></script>
+</body>
+</html>
