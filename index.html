@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RHEL 10 Installation Lab Simulator</title>
+  <link rel="stylesheet" href="css/lab.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand"><span class="hat" aria-hidden="true"></span> Red Hat Enterprise Linux 10 · Install Lab</div>
+      <div class="top-meta">
+        <span>Simulator · not affiliated with Red Hat</span>
+        <span>Anaconda-style hub</span>
+      </div>
+    </header>
+
+    <!-- GRUB -->
+    <section id="screen-grub" class="screen active grub">
+      <h1>GNU GRUB  version 2.12</h1>
+      <div class="grub-list">
+        <div class="grub-item sel">Install Red Hat Enterprise Linux 10.0</div>
+        <div class="grub-item">Test this media &amp; install Red Hat Enterprise Linux 10.0</div>
+        <div class="grub-item">Troubleshooting → Rescue a Red Hat Enterprise Linux system</div>
+      </div>
+      <footer>
+        Use the ↑ and ↓ keys to select which entry is highlighted.<br />
+        Press enter to boot the selected OS. Click an entry on phones/tablets.
+      </footer>
+    </section>
+
+    <!-- Language -->
+    <section id="screen-lang" class="screen lang-wrap">
+      <div class="lang-head">
+        <h2>Welcome to Red Hat Enterprise Linux 10.0</h2>
+        <p>What language would you like to use during the installation process?</p>
+      </div>
+      <div class="lang-grid">
+        <div class="listbox" id="lang-list"></div>
+        <div>
+          <p>This sets the <b>installer</b> language and the default system locale (you can change locales later).</p>
+          <p>RHEL 10 uses the <b>Anaconda</b> installer. After Continue you land on the <b>Installation Summary</b> hub — configure spokes in any order. Orange tiles are mandatory.</p>
+          <p>Nothing is written to disk until <b>Begin Installation</b>.</p>
+        </div>
+      </div>
+      <div class="foot">
+        <span>Lab tip: pick English (United States) unless your instructor said otherwise.</span>
+        <button class="btn" id="continue-lang">Continue</button>
+      </div>
+    </section>
+
+    <!-- Hub -->
+    <section id="screen-hub" class="screen hub">
+      <div class="hub-title">
+        <h2>Installation Summary</h2>
+        <p>Complete every tile marked “Needs attention”, then begin. Order does not matter.</p>
+      </div>
+      <div class="hub-grid" id="hub-grid"></div>
+      <div class="foot">
+        <span>Quit is disabled in the lab. Use Reset lab in the checklist if you need a fresh start.</span>
+        <button class="btn ok" id="begin-btn" disabled>Begin Installation</button>
+      </div>
+    </section>
+
+    <!-- Progress -->
+    <section id="screen-progress" class="screen progress-wrap">
+      <h2>Installing Red Hat Enterprise Linux 10.0</h2>
+      <p>Packages are being written to the virtual disk. Watch the log — exam questions often ask what happens in this phase.</p>
+      <div class="bar"><i id="pbar"></i></div>
+      <pre class="log" id="install-log"></pre>
+      <div class="foot" style="background:transparent;border:0;padding:16px 0">
+        <span></span>
+        <button class="btn danger" id="reboot-btn" disabled>Reboot system</button>
+      </div>
+    </section>
+
+    <!-- Login -->
+    <section id="screen-login" class="screen login">
+      <div class="login-card">
+        <div class="hat" style="margin:0 auto 8px;width:36px;height:36px"></div>
+        <div style="opacity:.7;font-size:13px">Red Hat Enterprise Linux 10</div>
+        <h2 id="login-host">localhost</h2>
+        <input id="login-user" placeholder="Username" autocomplete="off" />
+        <input id="login-pass" type="password" placeholder="Password" />
+        <p id="login-err" style="color:#ff6b6b;min-height:1.2em;font-size:13px"></p>
+        <button class="btn" id="do-login" style="width:100%">Sign In</button>
+        <p style="font-size:12px;opacity:.7">Use the local user you created (or root).</p>
+      </div>
+    </section>
+
+    <!-- Desktop / verify -->
+    <section id="screen-desktop" class="screen desktop">
+      <div class="panel">
+        <span>Activities</span>
+        <span id="who">user</span>
+        <span>Fri 12:00</span>
+      </div>
+      <div class="term">
+        <div class="term-bar">student@rhel10: Terminal — verify the install</div>
+        <pre class="term-body" id="term-out"></pre>
+        <div class="term-in"><span id="prompt">$ </span><input id="cmd" autocomplete="off" /></div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="labdock" aria-label="Student checklist">
+    <h4>Student lab checklist</h4>
+    <ul id="lab-list"></ul>
+    <div class="score" id="score">Lab score: 0/9</div>
+    <div style="padding:0 12px 12px">
+      <button class="btn ghost" id="reset-lab">Reset lab</button>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay">
+    <div class="spoke">
+      <header>
+        <h3 id="spoke-title">Spoke</h3>
+        <button class="btn" id="spoke-done">Done</button>
+      </header>
+      <div class="body" id="spoke-body"></div>
+    </div>
+  </div>
+
+  <script src="js/installer.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a29df378cb187fd1',t:'MTc4NjUyMTY3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
